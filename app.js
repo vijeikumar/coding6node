@@ -7,6 +7,7 @@ const sqlite3 = require("sqlite3");
 const app = express();
 
 app.use(express.json());
+
 const path = require("path");
 
 const dbPath = path.join(__dirname, "covid19India.db");
@@ -54,6 +55,7 @@ const reportSnakeToCamel = (newObject) => {
     totalDeaths: newObject.deaths,
   };
 };
+
 app.get("/states/", async (request, response) => {
   const getAllStates = `SELECT * FROM state`;
   const dpResponse = await db.all(getAllStates);
@@ -88,13 +90,13 @@ app.get("/districts/:districtId/", async (request, response) => {
   response.send(districtSnakeToCamel(districtResponse));
 });
 
-app.delete("districts/:districtId/", async (request, response) => {
+app.delete("/districts/:districtId/", async (request, response) => {
   const { districtId } = request.params;
   const removeDistricts = `DELETE FROM district WHERE district_id=${districtId}`;
   await db.run(removeDistricts);
   response.send("District Removed");
 });
-app.put("districts/:districtId/", async (request, response) => {
+app.put("/districts/:districtId/", async (request, response) => {
   const { districtId } = request.params;
   const districtDetails = request.body;
   const {
@@ -118,7 +120,7 @@ app.put("districts/:districtId/", async (request, response) => {
   response.send("District Details Updated");
 });
 
-app.get("states/:stateId/stats/", async (request, response) => {
+app.get("/states/:stateId/stats/", async (request, response) => {
   const { stateId } = request.params;
   const stateQuery = `
     SELECT 
@@ -134,7 +136,7 @@ app.get("states/:stateId/stats/", async (request, response) => {
   response.send(resultReport);
 });
 
-app.get("districts/:districtId/details/", async (request, response) => {
+app.get("/districts/:districtId/details/", async (request, response) => {
   const { districtId } = request.params;
   const stateQuery = `SELECT state_name FROM state   NATURAL JOIN district WHERE district_id= ${districtId}`;
   const stateName = await db.get(stateQuery);
